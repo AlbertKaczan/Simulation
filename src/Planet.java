@@ -1,12 +1,15 @@
 import processing.core.PVector;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static processing.core.PApplet.constrain;
 
 
-public class Planet {
-    int counter;
+public class Planet implements Serializable {
+    private static boolean drawTail = true;
+
+    int counter = 0;
 
 
     PVector vel;
@@ -19,6 +22,7 @@ public class Planet {
     int a = (int) Main.processing.random(0, 255);
     int b = (int) Main.processing.random(0, 255);
     int c = (int) Main.processing.random(0, 255);
+
 
 
     ArrayList<PVector> orbit;
@@ -46,15 +50,14 @@ public class Planet {
 
         acc.mult(0);
 
-        if (counter++ < r) {
+        if (counter++ > r/8) {
             orbit.add(position.copy());
-        } else {
             counter = 0;
         }
 
-        if (orbit.size() > 2000) {
-            orbit.remove(0);
-        }
+            if (orbit.size() > 2000) {
+                orbit.remove(0);
+            }
 
     }
 
@@ -72,13 +75,12 @@ public class Planet {
         Main.processing.sphere(r);
         Main.processing.popMatrix();
 
-        for (int i = 1; i < orbit.size(); i++) {
-            if (orbit.size() > 2) {
-
-                Main.processing.stroke(a, b, c);
-                Main.processing.line(orbit.get(i).x, orbit.get(i).y, orbit.get(i).z, orbit.get(i - 1).x, orbit.get(i - 1).y, orbit.get(i - 1).z);
-            }
-        }
+        if (drawTail)
+            for (int i = 1; i < orbit.size(); i++)
+                if (orbit.size() > 2) {
+                    Main.processing.stroke(a, b, c);
+                    Main.processing.line(orbit.get(i).x, orbit.get(i).y, orbit.get(i).z, orbit.get(i - 1).x, orbit.get(i - 1).y, orbit.get(i - 1).z);
+                }
 
     }
 
@@ -97,4 +99,9 @@ public class Planet {
 
         return force;
     }
+
+    public static void setDrawTail(boolean drawTail) {
+        Planet.drawTail = drawTail;
+    }
+
 }

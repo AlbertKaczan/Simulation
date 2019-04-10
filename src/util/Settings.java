@@ -57,8 +57,8 @@ public class Settings extends JFrame {
 			public void run() {
 				try {
 					Settings frame = new Settings();
-					frame.addSlider(0, 100, 50, "kurwa");
-					frame.addSlider(0, 100, 50, "kurwa2");
+					frame.addSlider(1, 50, 5, "Time");
+//					frame.addSlider(0, 100, 50, "kurwa2");
 //					frame.addSlider(0, 100, 50, "kurwa");
 //					frame.addSlider(0, 100, 50, "kurwa");
 //					frame.addSlider(0, 100, 50, "kurwa");
@@ -174,7 +174,7 @@ public class Settings extends JFrame {
 				| UnsupportedLookAndFeelException e1) {
 			e1.printStackTrace();
 		}
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // se mozesz zmienic to tutaj jak bys moze kiedys tam to zrobic chcial co nie
 		
 		getContentPane().setLayout(null);
 		
@@ -207,7 +207,7 @@ public class Settings extends JFrame {
 		return sliders.get(name);
 	}
 	
-	private void createWindow() {
+	public void createWindow() {
 		//getContentPane().removeAll();
 		
 		if (slidersBP == null)

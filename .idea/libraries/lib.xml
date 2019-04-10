@@ -3,7 +3,9 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/lib" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../SimulationJava/lib/peasycam_302.zip!/peasycam/reference" />
+    </JAVADOC>
     <SOURCES />
     <jarDirectory url="file://$PROJECT_DIR$/lib" recursive="false" />
   </library>

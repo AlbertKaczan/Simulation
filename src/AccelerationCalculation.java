@@ -2,15 +2,15 @@ import processing.core.PVector;
 
 
 
-public class AccelerationCalculation extends Thread{
+public class AccelerationCalculation extends Thread {
     Planet[] planetsList;
 
-    AccelerationCalculation( Planet [] planets){
+    AccelerationCalculation( Planet [] planets) {
         planetsList = planets;
     }
     @Override
     public void run() {
-        while(true){
+        while(true) {
             for(int i =0; i < planetsList.length; i++) {
                 for (int j = 0; j < planetsList.length; j++) {
                     if (i != j) {
@@ -20,11 +20,9 @@ public class AccelerationCalculation extends Thread{
                 }
                 planetsList[i].update();
             }
-            try{
-                sleep(16);
-            }catch(InterruptedException e){
-                e.printStackTrace();
-            }
+            try {
+                sleep(Main.getSettings().getSlider(Main.KURWO_STRING).getValue(),0);
+            } catch(InterruptedException ignored) {}
         }
     }
 
