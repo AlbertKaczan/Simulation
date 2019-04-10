@@ -1,8 +1,9 @@
 import processing.core.PVector;
 
+import java.io.Serializable;
 
 
-public class AccelerationCalculation extends Thread{
+public class AccelerationCalculation extends Thread {
     Planet[] planetsList;
 
     AccelerationCalculation( Planet [] planets){
@@ -21,7 +22,7 @@ public class AccelerationCalculation extends Thread{
                 planetsList[i].update();
             }
             try{
-                sleep(16);
+                sleep(Main.getSettings().getSlider(Main.STRING).getValue(),0);
             }catch(InterruptedException e){
                 e.printStackTrace();
             }

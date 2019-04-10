@@ -207,7 +207,7 @@ public class Settings extends JFrame {
 		return sliders.get(name);
 	}
 	
-	private void createWindow() {
+	public void createWindow() {
 		//getContentPane().removeAll();
 		
 		if (slidersBP == null)

@@ -3,47 +3,57 @@ import processing.core.*;
 import processing.opengl.*;
 import peasy.*;
 import peasy.org.apache.commons.math.geometry.*;
-import java.util.Scanner;
 
+import java.beans.Expression;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import util.Settings;
 
 public class Main extends PApplet {
-
     public static PApplet processing;
 
-    public static void main(String[] args){
-//        Options v = new Options();
-//        Option  o = new Option("o","opcja");
-//        v.addOption(o);
-//        CommandLineParser parser = new DefaultParser();
-//        CommandLine cmd = null;
-//        try {
-//            cmd = parser.parse(v,args);
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//        cmd.getOptionValue("o");
-
-
-
-
-
-
-        PApplet.main("Main", args);}
+    static  Settings settings = new Settings();
+    public static final String STRING = "TIME";
 
     PeasyCam cam;
 
+    Storage values;
 
-    int numberOfPlanets;
+    public static int numberOfPlanets;
+    int numberOfHoles;
+
+    Planet[] terazMa;
 
     Planet[] planets;
 
     float[] massList;
 
+    PVector[] locations;
+
+    PVector[] velocities;
+
+    PVector[] accelerations;
+
 
     PGraphics nextBackground;
 
+    public static void main(String[] args) {
+        PApplet.main("Main", args);
 
-    public void settings(){size(1000,1000,P3D);}
+        settings = new Settings();
+        settings.addSlider(1, 70, 25, STRING);
+
+        settings.createWindow();
+        settings.setVisible(true);
+    }
+
+    public void settings() {
+        //size(1000,1000,P3D);}
+        fullScreen(P3D);
+    }
 
     public void setup(){
         processing = this;
@@ -52,73 +62,89 @@ public class Main extends PApplet {
 
         cam.setMaximumDistance(7000);
 
+        values = new Storage();
 
-
-        numberOfPlanets = 7;
+        numberOfPlanets = 20;
+        numberOfHoles = 1;
         planets = new Planet[numberOfPlanets];
+
+
 
         massList = new float[numberOfPlanets];
         massGenerator();
 
-        float initAcc;
-        initAcc = 0.3f;
+        locations = new PVector[numberOfPlanets];
+        velocities = new PVector[numberOfPlanets];
+        accelerations = new PVector[numberOfPlanets];
 
+        int it = numberOfPlanets - numberOfHoles;
 
-        PVector loc0 = new PVector(1500,0,0);
-        PVector loc1 = new PVector(0,0,1500);
-        PVector loc2 = new PVector(-1500,0,0);
-        PVector loc3 = new PVector(0,0,-1500);
-        PVector loc4 = new PVector(0,1500,0);
-        PVector loc5 = new PVector(0,-1500,0);
+        for(int i = 0; i < it; i++) {
+            PVector location = new PVector(random(-width/2,width/2),random(-height/2,height/2),random(-width/2,width/2));
+            locations[i] = location;
 
+        }
 
-        PVector loc6 = new PVector(0,0,0);
+        for(int i = 0; i < it; i++) {
+            PVector velocity = new PVector(random(-0.5f,0.5f),random(-0.5f,0.5f),random(-0.5f,0.5f));
+            velocities[i] = velocity;
 
-        PVector vel0 = new PVector(0,0,-initAcc);
-        PVector vel1 = new PVector(0,initAcc,0);
-        PVector vel2 = new PVector(0,0,initAcc);
-        PVector vel3 = new PVector(-initAcc,0,-initAcc);
-        PVector vel4 = new PVector(-initAcc,0,-initAcc);
-        PVector vel5 = new PVector(initAcc,0,initAcc);
+        }
 
-        PVector vel6 = new PVector(0,0,0);
+        for(int i = 0; i < it; i++) {
+            PVector acceleration = new PVector(random(-0.15f, 0.15f), random(-0.15f, 0.15f), random(-0.15f, 0.15f));
+            accelerations[i] = acceleration;
+        }
 
-        PVector acc0 = new PVector(0,0,0);
-        PVector acc1 = new PVector(0,0,0);
-        PVector acc2 = new PVector(0,0,0);
-        PVector acc3 = new PVector(0,0,0);
-        PVector acc4 = new PVector(0,0,0);
-        PVector acc5 = new PVector(0,0,0);
+        PVector hole = new PVector();
+        for(int i = 0; i < it; i++) {
+            planets[i] = new Planet(locations[i],velocities[i],accelerations[i],massList[i],map(massList[i],100,500,20,40));
+        }
 
-        PVector acc6 = new PVector(0,0,0);
-
-
-        planets[0] = new Planet(loc0,vel0,acc0,massList[0],map(massList[0],100,1000,20,70));
-        planets[1] = new Planet(loc1,vel1,acc1,massList[1],map(massList[1],100,1000,20,70));
-        planets[2] = new Planet(loc2,vel2,acc2,massList[2],map(massList[2],100,1000,20,70));
-        planets[3] = new Planet(loc3,vel3,acc3,massList[3],map(massList[3],100,1000,20,70));
-        planets[4] = new Planet(loc4,vel4,acc4,massList[4],map(massList[4],100,1000,20,70));
-        planets[5] = new Planet(loc5,vel5,acc5,massList[5],map(massList[5],100,1000,20,70));
-
-        planets[6] = new Planet(loc6,vel6,acc6,50000,25);
-
-
-        //      Manual setting for Planet Object values
-//        for(int i = 0; i < planets.length; i ++){
-//            PVector location = new PVector();
-//            inputData(location);
+        planets[planets.length - numberOfHoles] = new Planet(new PVector(0, 0, 0),new PVector(0,0,0),hole,25000,25);
+        //planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(-width, 0, 0),hole,hole,70000,25);
+//        PVector loc0 = new PVector(1500,0,0);
+//        PVector loc1 = new PVector(0,0,1500);
+//        PVector loc2 = new PVector(-1500,0,0);
+//        PVector loc3 = new PVector(0,0,-1500);
+//        PVector loc4 = new PVector(0,1500,0);
+//        PVector loc5 = new PVector(0,-1500,0);
 //
-//            PVector velocity = new PVector();
-//            inputData(velocity);
 //
-//            PVector acceleration = new PVector();
-//            inputData(acceleration);
-//            String massname = "mass";
-//            float mass = inputData(massname);
-//            String radiusname = "radius";
-//            float radius = inputData(radiusname);
-//            planets[i] = new Planet(location,velocity,acceleration,mass,radius);
-//        }
+//        PVector loc6 = new PVector(0,0,0);
+//
+//        PVector vel0 = new PVector(0,0,-initAcc);
+//        PVector vel1 = new PVector(0,initAcc,0);
+//        PVector vel2 = new PVector(0,0,initAcc);
+//        PVector vel3 = new PVector(-initAcc,0,-initAcc);
+//        PVector vel4 = new PVector(-initAcc,0,-initAcc);
+//        PVector vel5 = new PVector(initAcc,0,initAcc);
+//
+//        PVector vel6 = new PVector(0,0,0);
+//
+//        PVector acc0 = new PVector(0,0,0);
+//        PVector acc1 = new PVector(0,0,0);
+//        PVector acc2 = new PVector(0,0,0);
+//        PVector acc3 = new PVector(0,0,0);
+//        PVector acc4 = new PVector(0,0,0);
+//        PVector acc5 = new PVector(0,0,0);
+//
+//        PVector acc6 = new PVector(0,0,0);
+//
+//
+//        planets[0] = new Planet(loc0,vel0,acc0,massList[0],map(massList[0],100,1000,20,70));
+//        planets[1] = new Planet(loc1,vel1,acc1,massList[1],map(massList[1],100,1000,20,70));
+//        planets[2] = new Planet(loc2,vel2,acc2,massList[2],map(massList[2],100,1000,20,70));
+//        planets[3] = new Planet(loc3,vel3,acc3,massList[3],map(massList[3],100,1000,20,70));
+//        planets[4] = new Planet(loc4,vel4,acc4,massList[4],map(massList[4],100,1000,20,70));
+//        planets[5] = new Planet(loc5,vel5,acc5,massList[5],map(massList[5],100,1000,20,70));
+
+//        planets[6] = new Planet(loc6,vel6,acc6,50000,25);
+
+            //planets[planets.length - numberOfHoles] = new Planet(new PVector(width/2, 0, 0),new PVector(0,0,-1f),hole,50000,25);
+            //planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(-width/2, 0, 0),hole,hole,100000,25);
+
+        terazMa = planets;
 
         nextBackground = getBackgroundImage(this);
 
@@ -145,56 +171,6 @@ public class Main extends PApplet {
 
     }
 
-
-
-//    public void keyPressed() {
-//        for(int camSwitch = 0;camSwitch < planets.length; camSwitch ++){
-//            if(camSwitch == planets.length){camSwitch = 0;}
-//            cam.lookAt(planets[camSwitch].position.x,planets[camSwitch].position.y,planets[camSwitch].position.z);
-//        }
-//
-//
-//
-//    }
-//
-
-
-
-
-//    PVector  inputData (PVector p) {
-//        float x;
-//        float y;
-//        float z;
-//        for(int j = 0; j < 3; j++){
-//            Scanner scan = new Scanner(System.in);
-//            switch (j){
-//                case 0:
-//                    System.out.println("Please provide x value for: ");
-//                    x = scan.nextInt();
-//                    p.x = x;
-//                    break;
-//                case 1:
-//                    System.out.println("Please provide y value for: ");
-//                    y = scan.nextInt();
-//                    p.y = y;
-//                    break;
-//                case 2:
-//                    System.out.println("Please provide z value for: ");
-//                    z = scan.nextInt();
-//                    p.z = z;
-//                    break;
-//            }
-//        }
-//        return p;
-//    }
-
-//    float inputData(String c){
-//        Scanner scan = new Scanner(System.in);
-//        System.out.println("Please provide " + c + ":");
-//        float s = scan.nextInt();
-//        return s;
-//    }
-
     private PGraphics getBackgroundImage(PApplet thisApplet){
         PGraphics back = thisApplet.createGraphics(width,height);
         back.beginDraw();
@@ -214,14 +190,21 @@ public class Main extends PApplet {
     private float massGenerator(){
         float randomMass = 0;
         for(int i = 0; i < numberOfPlanets; i ++){
-            randomMass = random(100,1000);
+            randomMass = random(100,500);
             massList[i] = randomMass;
         }
         return randomMass;
     }
 
+    public static Settings getSettings(){
+        return settings;
+    }
 
-
-
+    public void keyPressed() {
+        if(key == 's') {
+            values.saveConfig(terazMa);
+        }
+        super.keyPressed();
+    }
 
 }

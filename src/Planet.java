@@ -1,11 +1,12 @@
 import processing.core.PVector;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static processing.core.PApplet.constrain;
 
 
-public class Planet {
+public class Planet implements Serializable {
     int counter;
 
 
@@ -15,7 +16,7 @@ public class Planet {
     PVector gaccSum;
     float m;
     float r;
-    float G = (float) 6.674 * 0.005f;
+    float G = (float) 6.674 * 0.001f;
     int a = (int) Main.processing.random(0, 255);
     int b = (int) Main.processing.random(0, 255);
     int c = (int) Main.processing.random(0, 255);
@@ -97,4 +98,5 @@ public class Planet {
 
         return force;
     }
+
 }
