@@ -1,15 +1,14 @@
-import org.apache.commons.cli.*;
-import processing.core.*;
-import processing.opengl.*;
-import peasy.*;
-import peasy.org.apache.commons.math.geometry.*;
 
-import java.beans.Expression;
+import processing.core.*;
+
+import peasy.*;
+
 import java.io.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
+
 import util.Settings;
 
 public class Main extends PApplet {
@@ -20,14 +19,10 @@ public class Main extends PApplet {
 
     PeasyCam cam;
 
-    Storage values;
-
     public static int numberOfPlanets;
     int numberOfHoles;
 
-    Planet[] terazMa;
-
-    Planet[] planets;
+    public static Planet[] planets;
 
     float[] massList;
 
@@ -44,7 +39,7 @@ public class Main extends PApplet {
         PApplet.main("Main", args);
 
         settings = new Settings();
-        settings.addSlider(1, 70, 25, STRING);
+        settings.addSlider(5, 40, 5, STRING);
 
         settings.createWindow();
         settings.setVisible(true);
@@ -62,33 +57,28 @@ public class Main extends PApplet {
 
         cam.setMaximumDistance(7000);
 
-        values = new Storage();
+        numberOfPlanets = 50;
+        numberOfHoles =2;
 
-        numberOfPlanets = 20;
-        numberOfHoles = 1;
         planets = new Planet[numberOfPlanets];
-
-
-
         massList = new float[numberOfPlanets];
-        massGenerator();
-
         locations = new PVector[numberOfPlanets];
         velocities = new PVector[numberOfPlanets];
         accelerations = new PVector[numberOfPlanets];
 
+
         int it = numberOfPlanets - numberOfHoles;
 
-        for(int i = 0; i < it; i++) {
-            PVector location = new PVector(random(-width/2,width/2),random(-height/2,height/2),random(-width/2,width/2));
-            locations[i] = location;
+        massGenerator();
 
+        for(int i = 0; i < it; i++) {
+            PVector location = new PVector(random(-width/2,width/2),random(-width/2,width/2),random(-width/2,width/2));
+            locations[i] = location;
         }
 
         for(int i = 0; i < it; i++) {
             PVector velocity = new PVector(random(-0.5f,0.5f),random(-0.5f,0.5f),random(-0.5f,0.5f));
             velocities[i] = velocity;
-
         }
 
         for(int i = 0; i < it; i++) {
@@ -96,13 +86,93 @@ public class Main extends PApplet {
             accelerations[i] = acceleration;
         }
 
-        PVector hole = new PVector();
         for(int i = 0; i < it; i++) {
             planets[i] = new Planet(locations[i],velocities[i],accelerations[i],massList[i],map(massList[i],100,500,20,40));
         }
 
-        planets[planets.length - numberOfHoles] = new Planet(new PVector(0, 0, 0),new PVector(0,0,0),hole,25000,25);
-        //planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(-width, 0, 0),hole,hole,70000,25);
+        PVector hole = new PVector();
+
+        //planets[planets.length - numberOfHoles] = new Planet(new PVector(0,0,0),new PVector(0.2f,0,0),new PVector(-0.2f,0,0),50000,25,255,255,255);
+
+
+        //  System with 2 black holes located on opposite sides od 000
+        planets[planets.length - numberOfHoles] = new Planet(new PVector(-width/2,0,0),new PVector(0,0,-0.2f),hole,35000,25,255,255,255);
+        planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(width/2,0,0),new PVector(0,0,0.2f),hole,35000,25,255,255,255);
+
+
+        nextBackground = getBackgroundImage(this);
+
+        AccelerationCalculation ac = new AccelerationCalculation(planets);
+
+        ac.start();
+
+        frameRate(60);
+    }
+
+    public void draw(){
+        background(nextBackground);
+
+        ambientLight(255,255,255);
+
+        for(int i = 0 ; i < planets.length; i++){
+            planets[i].display();
+        }
+    }
+
+    private PGraphics getBackgroundImage(PApplet thisApplet){
+        PGraphics back = thisApplet.createGraphics(width,height);
+        back.beginDraw();
+        back.background(0);
+
+        for (int i =0; i < 2000; i++){
+            back.fill(255);
+            int posX = (int) (Math.random() * back.width);
+            int posY = (int) (Math.random() * back.height);
+            back.ellipse(posX,posY,2,2);
+        }
+        back.endDraw();
+
+        return back;
+    }
+
+    private float massGenerator() {
+        float randomMass = 0;
+        for(int i = 0; i < numberOfPlanets - numberOfHoles; i ++){
+            randomMass = random(100,500);
+            massList[i] = randomMass;
+        }
+        return randomMass;
+    }
+
+    public static Settings getSettings(){
+        return settings;
+    }
+
+    public void keyPressed() {
+        if(key == 's') {
+            try {
+                File file = new File("desirableSettings.txt");
+
+                PrintWriter output = new PrintWriter(file);
+                for (int p =0; p < planets.length; p++) {
+                    output.println(locations[p]);
+                    output.println(velocities[p]);
+                    output.println(accelerations[p]);
+                    output.println(massList[p]);
+                }
+                output.println(planets[planets.length - numberOfHoles].initmass);
+                output.println(numberOfPlanets);
+                output.println(numberOfHoles);
+                output.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        super.keyPressed();
+    }
+}
+
+
 //        PVector loc0 = new PVector(1500,0,0);
 //        PVector loc1 = new PVector(0,0,1500);
 //        PVector loc2 = new PVector(-1500,0,0);
@@ -141,70 +211,5 @@ public class Main extends PApplet {
 
 //        planets[6] = new Planet(loc6,vel6,acc6,50000,25);
 
-            //planets[planets.length - numberOfHoles] = new Planet(new PVector(width/2, 0, 0),new PVector(0,0,-1f),hole,50000,25);
-            //planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(-width/2, 0, 0),hole,hole,100000,25);
-
-        terazMa = planets;
-
-        nextBackground = getBackgroundImage(this);
-
-        AccelerationCalculation ac = new AccelerationCalculation(planets);
-
-        ac.start();
-
-
-
-
-        frameRate(60);
-
-    }
-
-    public void draw(){
-        background(nextBackground);
-
-        ambientLight(255,255,255);
-
-        for(int i = 0 ; i < planets.length; i++){
-            planets[i].display();
-        }
-
-
-    }
-
-    private PGraphics getBackgroundImage(PApplet thisApplet){
-        PGraphics back = thisApplet.createGraphics(width,height);
-        back.beginDraw();
-        back.background(0);
-
-        for (int i =0; i < 1000; i++){
-            back.fill(255);
-            int posX = (int) (Math.random() * back.width);
-            int posY = (int) (Math.random() * back.height);
-            back.ellipse(posX,posY,2,2);
-        }
-        back.endDraw();
-
-        return back;
-    }
-
-    private float massGenerator(){
-        float randomMass = 0;
-        for(int i = 0; i < numberOfPlanets; i ++){
-            randomMass = random(100,500);
-            massList[i] = randomMass;
-        }
-        return randomMass;
-    }
-
-    public static Settings getSettings(){
-        return settings;
-    }
-
-    public void keyPressed() {
-        if(key == 's') {
-            values.saveConfig(terazMa);
-        }
-        super.keyPressed();
-    }
-
-}
+//planets[planets.length - numberOfHoles] = new Planet(new PVector(width/2, 0, 0),new PVector(0,0,-1f),hole,50000,25);
+//planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(-width/2, 0, 0),hole,hole,100000,25);

@@ -1,7 +1,5 @@
 import processing.core.PVector;
 
-import java.io.Serializable;
-
 
 public class AccelerationCalculation extends Thread {
     Planet[] planetsList;
@@ -28,6 +26,4 @@ public class AccelerationCalculation extends Thread {
             }
         }
     }
-
-
 }
