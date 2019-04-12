@@ -53,7 +53,7 @@ public class Main extends PApplet {
         cam.setMaximumDistance(7000);
 
         numberOfPlanets = 50;
-        numberOfStars = 2;
+        numberOfStars = 1;
 
         planets = new Planet[numberOfPlanets];
         massList = new float[numberOfPlanets];
@@ -89,16 +89,16 @@ public class Main extends PApplet {
 
 
         //Single star
-        //planets[planets.length - numberOfStars] = new Planet(new PVector(0,0,0),new PVector(0.2f,0,0),new PVector(-0.2f,0,0),50000,25,255,255,255);
+        planets[planets.length - numberOfStars] = new Planet(new PVector(0,0,0),new PVector(0,0,0),new PVector(0,0,0),50000,25,255,255,255);
 
 
         //  System with 2 stars located on opposite sides od 000
-//        planets[planets.length - numberOfStars] = new Planet(new PVector(width/2,0,0),new PVector(0,0,-0.2f),zeroVector,25000,50,255,255,255);
-//        planets[planets.length - numberOfStars + 1] = new Planet(new PVector(-width/2,0,0),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
+//        planets[planets.length - numberOfStars] = new Planet(new PVector(width/2,0,0),new PVector(-0.1f,0,-0.1f),zeroVector,25000,50,255,255,255);
+//        planets[planets.length - numberOfStars + 1] = new Planet(new PVector(-width/2,0,0),new PVector(0.1f,0,0.1f),zeroVector,25000,50,255,255,255);
 
 //        random star position
-        planets[planets.length - numberOfStars] = new Planet(new PVector(random(-width / 2, width / 2),random(-width / 2, width / 2), random(-width / 2, width / 2)),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
-        planets[planets.length - numberOfStars + 1] = new Planet(new PVector(random(-width / 2, width / 2),random(-width / 2, width / 2), random(-width / 2, width / 2)),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
+//        planets[planets.length - numberOfStars] = new Planet(new PVector(random(-width / 2, width / 2),random(-width / 2, width / 2), random(-width / 2, width / 2)),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
+//        planets[planets.length - numberOfStars + 1] = new Planet(new PVector(random(-width / 2, width / 2),random(-width / 2, width / 2), random(-width / 2, width / 2)),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
 
         nextBackground = getBackgroundImage(this);
 
@@ -128,7 +128,7 @@ public class Main extends PApplet {
             back.fill(255);
             int posX = (int) (Math.random() * back.width);
             int posY = (int) (Math.random() * back.height);
-            back.ellipse(posX, posY, 2, 2);
+            back.ellipse(posX, posY, 4, 4);
         }
         back.endDraw();
 

@@ -61,7 +61,7 @@ public class Planet implements Serializable {
             orbit.add(position.copy());
             counter = 0;
         }
-        if (orbit.size() > 500) {
+        if (orbit.size() > 1000) {
             orbit.remove(0);
         }
     }
