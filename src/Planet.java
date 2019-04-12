@@ -61,7 +61,7 @@ public class Planet implements Serializable {
             orbit.add(position.copy());
             counter = 0;
         }
-        if (orbit.size() > 1000) {
+        if (orbit.size() > 500) {
             orbit.remove(0);
         }
     }
@@ -69,6 +69,21 @@ public class Planet implements Serializable {
     void applyForce(PVector force) {
         PVector f = PVector.div(force, m);
         acc.add(f);
+    }
+
+    PVector attract(Planet p) {
+        PVector force = PVector.sub(position, p.position);
+
+        float d = force.mag();
+        d = constrain(d, r, 10000);
+
+        force.normalize();
+
+        float gForce = (G * m * p.m) / (d * d);
+
+        force.mult(gForce);
+
+        return force;
     }
 
     void display() {
@@ -85,20 +100,5 @@ public class Planet implements Serializable {
                 Main.processing.line(orbit.get(i).x, orbit.get(i).y, orbit.get(i).z, orbit.get(i - 1).x, orbit.get(i - 1).y, orbit.get(i - 1).z);
             }
         }
-    }
-
-    PVector attract(Planet p) {
-        PVector force = PVector.sub(position, p.position);
-
-        float d = force.mag();
-        d = constrain(d, r, 10000);
-
-        force.normalize();
-
-        float gForce = (G * m * p.m) / (d * d);
-
-        force.mult(gForce);
-
-        return force;
     }
 }
