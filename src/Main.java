@@ -3,11 +3,6 @@ import processing.core.*;
 
 import peasy.*;
 
-import java.io.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import util.Settings;
 
@@ -19,10 +14,10 @@ public class Main extends PApplet {
 
     PeasyCam cam;
 
-    public static int numberOfPlanets;
-    int numberOfHoles;
+    int numberOfPlanets;
+    int numberOfStars;
 
-    public static Planet[] planets;
+    Planet[] planets;
 
     float[] massList;
 
@@ -57,8 +52,8 @@ public class Main extends PApplet {
 
         cam.setMaximumDistance(7000);
 
-        numberOfPlanets = 10;
-        numberOfHoles = 1;
+        numberOfPlanets = 50;
+        numberOfStars = 2;
 
         planets = new Planet[numberOfPlanets];
         massList = new float[numberOfPlanets];
@@ -67,7 +62,7 @@ public class Main extends PApplet {
         accelerations = new PVector[numberOfPlanets];
 
 
-        int it = numberOfPlanets - numberOfHoles;
+        int it = numberOfPlanets - numberOfStars;
 
         massGenerator();
 
@@ -87,20 +82,23 @@ public class Main extends PApplet {
         }
 
         for (int i = 0; i < it; i++) {
-            planets[i] = new Planet(locations[i], velocities[i], accelerations[i], massList[i], map(massList[i], 100, 500, 20, 40));
+            planets[i] = new Planet(locations[i], velocities[i], accelerations[i], massList[i], map(massList[i], 300, 500, 10, 30));
         }
 
-        PVector hole = new PVector();
+        PVector zeroVector = new PVector();
 
 
         //Single star
-        planets[planets.length - numberOfHoles] = new Planet(new PVector(0,0,0),new PVector(0.2f,0,0),new PVector(-0.2f,0,0),50000,25,255,255,255);
+        //planets[planets.length - numberOfStars] = new Planet(new PVector(0,0,0),new PVector(0.2f,0,0),new PVector(-0.2f,0,0),50000,25,255,255,255);
 
 
         //  System with 2 stars located on opposite sides od 000
-        //planets[planets.length - numberOfHoles] = new Planet(new PVector(-width/2,0,0),new PVector(0,0,-0.2f),hole,25000,25,255,255,255);
-        //planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(width/2,0,0),new PVector(0,0,0.2f),hole,25000,25,255,255,255);
+//        planets[planets.length - numberOfStars] = new Planet(new PVector(width/2,0,0),new PVector(0,0,-0.2f),zeroVector,25000,50,255,255,255);
+//        planets[planets.length - numberOfStars + 1] = new Planet(new PVector(-width/2,0,0),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
 
+//        random star position
+        planets[planets.length - numberOfStars] = new Planet(new PVector(random(-width / 2, width / 2),random(-width / 2, width / 2), random(-width / 2, width / 2)),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
+        planets[planets.length - numberOfStars + 1] = new Planet(new PVector(random(-width / 2, width / 2),random(-width / 2, width / 2), random(-width / 2, width / 2)),new PVector(0,0,0.2f),zeroVector,25000,50,255,255,255);
 
         nextBackground = getBackgroundImage(this);
 
@@ -139,8 +137,8 @@ public class Main extends PApplet {
 
     private float massGenerator() {
         float randomMass = 0;
-        for (int i = 0; i < numberOfPlanets - numberOfHoles; i++) {
-            randomMass = random(100, 500);
+        for (int i = 0; i < numberOfPlanets - numberOfStars; i++) {
+            randomMass = random(300, 500);
             massList[i] = randomMass;
         }
         return randomMass;
@@ -190,5 +188,4 @@ public class Main extends PApplet {
 
 //        planets[6] = new Planet(loc6,vel6,acc6,50000,25);
 
-//planets[planets.length - numberOfHoles] = new Planet(new PVector(width/2, 0, 0),new PVector(0,0,-1f),hole,50000,25);
-//planets[planets.length - numberOfHoles + 1] = new Planet(new PVector(-width/2, 0, 0),hole,hole,100000,25);
+
